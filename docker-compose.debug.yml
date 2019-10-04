@@ -1,0 +1,16 @@
+version: '3'
+services:
+  buster-app:
+    ports:
+      - '4242:4242'
+      - '9229:9229'
+    command:
+      - ./node_modules/.bin/nodemon
+      - --watch
+      - src/**/*.ts
+      - --exec
+      - node
+      - -r
+      - ts-node/register
+      - --inspect-brk=0.0.0.0
+      - src/index.ts

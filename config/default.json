@@ -1,0 +1,12 @@
+{
+  "db": {
+    "connectionLimit": 3,
+    "host": "buster-app-mysql",
+    "name": "buster_dev",
+    "username": "dev",
+    "password": "password123",
+    "port": 3306,
+    "logQueries": false,
+    "socketpath": null
+  }
+}

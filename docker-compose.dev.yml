@@ -1,0 +1,8 @@
+version: '3'
+services:
+  buster-app:
+    ports:
+      - '4243:4242'
+  buster-app-mysql:
+    ports:
+      - '43308:3306'

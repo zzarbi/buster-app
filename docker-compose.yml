@@ -1,0 +1,40 @@
+version: '3'
+services:
+  buster-app:
+    image: buster-app
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    ports:
+      - '4242'
+    environment:
+      NODE_ENV: dev
+      BUSTER_API_URL: https://a9010a19.ngrok.io
+    command: >
+      bash -c "
+      ./bin/wait-for-it.sh buster-app-mysql:3306 &&
+      ./node_modules/.bin/db-migrate up &&
+      ./node_modules/.bin/nodemon --watch 'src/**/*.ts' src/index.ts"
+    depends_on:
+      - buster-app-mysql
+    volumes:
+      - ./src:/opt/app/src
+      - ./test:/opt/app/test
+      - ./migrations:/opt/app/migrations
+      - ./config:/opt/app/config
+      - ./bin:/opt/app/bin
+      - ./package.json:/opt/app/package.json
+      - ./yarn.lock:/opt/app/yarn.lock
+      - ./database.json:/opt/app/database.json
+  buster-app-mysql:
+    image: 'mysql:5.7'
+    command: "--character-set-server='utf8mb4' --collation-server='utf8mb4_unicode_ci'"
+    ports:
+      - '3306'
+    logging:
+      driver: none
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: password123
+      MYSQL_DATABASE: buster_dev

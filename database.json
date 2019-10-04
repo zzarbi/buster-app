@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "host": "buster-app-mysql",
+    "driver": "mysql",
+    "port": 3306,
+    "user": "dev",
+    "password": "password123",
+    "database": "buster_dev"
+  }
+}
