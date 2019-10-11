@@ -1,0 +1,5 @@
+Flask
+pyMySQL
+flask_sqlalchemy
+mysqlclient
+requests

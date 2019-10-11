@@ -17,9 +17,9 @@ exports.setup = function(options, seedLink) {
 exports.up = function(db) {
   return db.createTable('transaction', {
     id: {
-      type: type.STRING,
-      length: 256,
+      type: type.INTEGER,
       primaryKey: true,
+      autoIncrement: true
     },
     reference_id: {
       type: type.STRING,

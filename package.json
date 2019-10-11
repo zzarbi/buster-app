@@ -1,5 +1,5 @@
 {
-  "name": "buster-app",
+  "name": "buster-js-app",
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",
@@ -8,8 +8,8 @@
     "dev-clean": "docker-compose -p dev -f docker-compose.yml -f docker-compose.dev.yml down",
     "dev-debug": "docker-compose -p dev -f docker-compose.yml -f docker-compose.debug.yml up",
     "dev-rebuild": "docker-compose -p dev -f docker-compose.yml -f docker-compose.dev.yml build",
-    "dev-add": "docker-compose -p dev exec buster-app yarn add",
-    "migrate": "docker-compose -p dev exec buster-app yarn run db-migrate"
+    "dev-add": "docker-compose -p dev exec buster-js-app yarn add",
+    "migrate": "docker-compose -p dev exec buster-js-app yarn run db-migrate"
   },
   "dependencies": {
     "@types/bluebird": "^3.5.27",

@@ -53,6 +53,7 @@ dist/
 #dev test files
 src/test.ts
 bin/dev
+python/__pycache__
 
 # amplitude event data files
 /203331

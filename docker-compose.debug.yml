@@ -1,6 +1,6 @@
 version: '3'
 services:
-  buster-app:
+  buster-js-app:
     ports:
       - '4242:4242'
       - '9229:9229'

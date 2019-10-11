@@ -1,8 +1,11 @@
 version: '3'
 services:
-  buster-app:
+  buster-js-app:
     ports:
-      - '4243:4242'
+      - '4242:4242'
+  buster-python-app:
+    ports:
+      - '8082:8082'
   buster-app-mysql:
     ports:
       - '43308:3306'

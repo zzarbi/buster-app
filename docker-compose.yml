@@ -1,7 +1,7 @@
 version: '3'
 services:
-  buster-app:
-    image: buster-app
+  buster-js-app:
+    image: buster-js-app
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -9,7 +9,7 @@ services:
       - '4242'
     environment:
       NODE_ENV: dev
-      BUSTER_API_URL: https://a9010a19.ngrok.io
+      BUSTER_API_URL: http://34.102.239.194
     command: >
       bash -c "
       ./bin/wait-for-it.sh buster-app-mysql:3306 &&
@@ -26,6 +26,20 @@ services:
       - ./package.json:/opt/app/package.json
       - ./yarn.lock:/opt/app/yarn.lock
       - ./database.json:/opt/app/database.json
+  buster-python-app:
+    image: buster-python-app
+    build:
+      context: .
+      dockerfile: python.Dockerfile
+    ports:
+      - '8082'
+    environment:
+      BUSTER_API_URL: http://34.102.239.194
+    command: "python app.py"
+    depends_on:
+      - buster-app-mysql
+    volumes:
+      - ./python:/opt/app
   buster-app-mysql:
     image: 'mysql:5.7'
     command: "--character-set-server='utf8mb4' --collation-server='utf8mb4_unicode_ci'"
