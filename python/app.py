@@ -12,12 +12,7 @@ def get_root():
 def get_transactions():
     if request.method == 'GET':
         # get all transactions
-        key = create_api_key("ASdfasdadsffasd")
-        trans = create_transaction('a12sdfasdfasdzzfzadsf', key['key'])
-
-        t2 = get_transaction_by_reference_id(trans['referenceId'], key['key'])
-
-        return jsonify(t2)
+        return jsonify([])
 
     elif request.method == 'POST':
         # nothing
