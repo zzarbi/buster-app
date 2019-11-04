@@ -1,4 +1,4 @@
-import { DATE, STRING, UUIDV4, UUID } from 'sequelize';
+import { DATE, STRING, INTEGER } from 'sequelize';
 import { Column, Model, Table } from 'sequelize-typescript';
 import { ISerializable } from '../typings/serialization';
 
@@ -23,9 +23,8 @@ export enum TransactionStatus {
 export default class Transaction extends Model<Transaction>
   implements ISerializable<TransactionResponse> {
   @Column({
-    type: UUID,
+    type: INTEGER,
     field: 'id',
-    defaultValue: UUIDV4,
     primaryKey: true,
   })
   public id!: string;

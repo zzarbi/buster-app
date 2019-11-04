@@ -40,6 +40,14 @@ export async function getTransaction(id: number) {
   return result!.serialize();
 }
 
+export async function getTransactionByReferenceId(referenceId: string) {
+  const result = await Transaction.findOne({
+    where: { referenceId }
+  });
+
+  return result!.serialize();
+}
+
 export async function getAllTransactions() {
   const result = await Transaction.findAll();
 

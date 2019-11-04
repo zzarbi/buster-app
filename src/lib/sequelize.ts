@@ -1,6 +1,5 @@
 import * as config from 'config';
 import { Sequelize } from 'sequelize-typescript';
-import { isProdEnv, isStagingEnv } from './utils';
 
 export function typeCast(field: any, next: any) {
   if (field.type === 'NEWDECIMAL') {
@@ -22,8 +21,6 @@ export const sequelize = new Sequelize({
   host: config.get('db.host'),
   port: config.get('db.port'),
   dialectOptions: {
-    socketPath: (isProdEnv() || isStagingEnv()) && config.get('db.socketpath'),
-    multipleStatements: !isProdEnv() && !isStagingEnv(),
     charset: 'utf8mb4',
     typeCast,
   },
