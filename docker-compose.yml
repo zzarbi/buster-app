@@ -10,8 +10,10 @@ services:
     environment:
       NODE_ENV: dev
       BUSTER_API_URL: http://34.102.239.194
+      LOCAL_SERVICE_URL: 127.0.0.1:883
     command: >
       bash -c "
+
       ./bin/wait-for-it.sh buster-app-mysql:3306 &&
       ./node_modules/.bin/db-migrate up &&
       ./node_modules/.bin/nodemon --watch 'src/**/*.ts' src/index.ts"
@@ -52,3 +54,9 @@ services:
       MYSQL_USER: dev
       MYSQL_PASSWORD: password123
       MYSQL_DATABASE: buster_dev
+  buster-ngrok:
+    image: 'wernight/ngrok'
+    environment:
+      NGROK_PORT: 4242
+    ports:
+      - '80'

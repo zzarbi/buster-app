@@ -9,3 +9,6 @@ services:
   buster-app-mysql:
     ports:
       - '43308:3306'
+  buster-ngrok:
+    ports:
+      - '8083:80'

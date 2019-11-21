@@ -1,8 +1,10 @@
-The Buster API. Here at dave we work a lot with third party data providers who aren't always the most consistent and reliable. For this test we have created an third party api that mimics the things we do regurarly here. 
+#BUSTER APP
+
+Here at dave we work a lot with third party data providers who aren't always the most consistent and reliable. For this test we have created an third party api that mimics the things we do regurarly here. 
 
 
-THE BUSTER API
-The buster api lives here: https://5b2f73d1.ngrok.io
+## THE BUSTER API
+The buster api lives here: http://34.102.239.194
 If you make a GET request to that url you should get back something like { ok: true }
 
 Your available endpoints are:
@@ -13,7 +15,7 @@ POST /v1/api_key  -  creates an api key
 		webhookUrl - the url to send transaction status updates to
 
 	RESPONSE BODY
-      webhookUrl: the webhook url we will send webhooks to,
+      webhookUrl: the webhook url we will send webhooks to, should be the full path not just the domain.
       key: The registered api key for this user ( must be included in all transaction request headers )
 
 After you have created an API key, all future requests need to be authenticated by adding the header 
