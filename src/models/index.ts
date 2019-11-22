@@ -34,6 +34,20 @@ export async function updateTransaction(id: number, updates: Partial<Transaction
   return transaction.serialize();
 }
 
+export async function updateTransactionByReferenceId(referenceId: string, updates: Partial<TransactionCreate>) {
+  const transaction = await Transaction.findOne({
+    where: { referenceId }
+  });
+
+  if (!transaction) {
+    throw new NotFoundError(`Transaction not found with referenceId ${referenceId}`);
+  }
+
+  await transaction.update(updates);
+
+  return transaction.serialize();
+}
+
 export async function getTransaction(id: number) {
   const result = await Transaction.findByPk(id);
 

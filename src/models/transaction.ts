@@ -3,7 +3,7 @@ import { Column, Model, Table } from 'sequelize-typescript';
 import { ISerializable } from '../typings/serialization';
 
 export type TransactionResponse = {
-  id: string;
+  id: number;
   created: string;
   referenceId: string;
   status: TransactionStatus;
@@ -27,7 +27,7 @@ export default class Transaction extends Model<Transaction>
     field: 'id',
     primaryKey: true,
   })
-  public id!: string;
+  public id!: number;
 
   @Column({
     type: STRING(32),

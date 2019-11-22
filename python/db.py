@@ -53,9 +53,26 @@ def update_transaction(trans_id, updates):
 
     return trans.serialize()
 
+def update_transaction_by_reference_id(reference_id, updates):
+    trans = Transaction.query.filter_by(reference_id=reference_id).first()
+    if trans is None:
+        raise Exception('Transaction not found with reference_id: {}'.format(reference_id))
+
+    for key, value in updates.items():
+        setattr(trans, key, value)
+
+    db.session.commit()
+
+    return trans.serialize()
+
 
 def get_transaction(trans_id):
     trans = Transaction.query.filter_by(id=trans_id).first()
+
+    return trans.serialize()
+
+def get_transaction_by_reference_id(reference_id):
+    trans = Transaction.query.filter_by(reference_id=reference_id).first()
 
     return trans.serialize()
 
