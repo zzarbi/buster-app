@@ -15,7 +15,9 @@ public class DaoHelper {
      */
     private static Sql2o getDbConnection() {
         if (DaoHelper.db == null) {
-            DaoHelper.db = new Sql2o("jdbc:mysql://host.docker.internal:3306/buster_dev", "dev", "password123");
+            DaoHelper.db = new Sql2o("jdbc:mysql://" + EnvHelper.getMysqlHost() + ":" + EnvHelper.getMysqlPort() + "/" + EnvHelper.getMysqlDB(),
+                EnvHelper.getMysqlUsername(),
+                EnvHelper.getMysqlPassword());
         }
 
         return DaoHelper.db;

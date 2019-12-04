@@ -1,13 +1,19 @@
 package busterapp.util;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -19,16 +25,50 @@ public class BusterApi {
     private String apiUrl = "";
     private String apiKey = "";
 
-    private BusterApi (String url, int version) {
-        this.apiUrl = url + "/v" + version + "/";
+    /**
+     * Private Constructor for singleton
+     * 
+     * @param String url
+     * @param int version
+     */
+    private BusterApi(String url, int version) {
+        this.apiUrl = url + "/v" + version;
     }
 
-    /*
-     * Return an instance of the API
+    /**
+     * Send a request and add api header if needed
+     * 
+     * @param HttpUriRequest request
+     * @param String apiKey
+     * @return HttpResponse
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    private JsonObject sendRequest(HttpUriRequest request, String apiKey) throws ClientProtocolException, IOException, Exception {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        request.addHeader("content-type", "application/json");
+        if (!apiKey.isEmpty()) {
+            request.addHeader("X-API-KEY", apiKey);
+        }
+
+        // execute request
+        HttpResponse response = httpClient.execute(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
+
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new Exception(responseBody.isEmpty() ? "Unkown error" : responseBody);
+        }
+
+        return JsonParser.parseString(responseBody).getAsJsonObject();
+    }
+
+    /**
+     * Return an single and same instance of the API
+     * @return BusterApi
      */
     public static BusterApi getInstance() {
         if (BusterApi.instance == null) {
-            BusterApi.instance = new BusterApi("http://34.102.239.194", 1);
+            BusterApi.instance = new BusterApi(EnvHelper.getBusterAPIUrl(), Integer.parseInt(EnvHelper.getBusterAPIVersion()));
         }
         return BusterApi.instance;
     }
@@ -37,34 +77,26 @@ public class BusterApi {
      * Register Application to retrieve an API key
      */
     public void register() {
-        HttpClient httpClient = HttpClientBuilder.create().build();
-
-        JsonObject body = new JsonObject();
-        String webhookUrl = Ngrok.getInstance().getRemoteUrl() + "/webhooks";
-        body.addProperty("webhookUrl", webhookUrl);
-
         try {
-            HttpPost request = new HttpPost(this.apiUrl + "api_key");
-            Logger.info("API: " + this.apiUrl + "api_key");
-            
-            StringEntity params = new StringEntity(body.toString());
-            request.addHeader("content-type", "application/json");
-            request.setEntity(params);
+            // create body json
+            JsonObject data, body;
+            body = new JsonObject();
+            body.addProperty("webhookUrl", Ngrok.getInstance().getRemoteUrl() + "/webhooks");
 
-            HttpResponse response = httpClient.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+            HttpPost request = new HttpPost(this.apiUrl + "/api_key");
+            request.setEntity(new StringEntity(body.toString()));
 
-            if (statusCode != 200) {
-                throw new Exception("Unable to get register this application");
+            // send non-authenticated request
+            try {
+                data = sendRequest(request, "");
+            } catch(Exception e) {
+                throw new Exception("Error, unable to retrieve API key");
             }
-
-            String responseBody = EntityUtils.toString(response.getEntity());
-            JsonObject data = JsonParser.parseString(responseBody).getAsJsonObject();
 
             if (!data.has("key") || data.get("key").getAsString().isEmpty()) {
-                throw new Exception("API Key is empty");
+                throw new Exception("Error: API Key is empty");
             }
-            
+
             Logger.info("Got an API Key: " + data.get("key").toString());
             this.apiKey = data.get("key").getAsString();
         } catch (Exception ex) {
@@ -73,47 +105,85 @@ public class BusterApi {
     }
 
     /**
-     * Create a transaction and return the response
+     * Private method that actually handle request to the transaction endpoint
+     * - POST
+     * - GET
      * 
+     * @todo handleTransaction should be able to handle delete/put request
+     * @param String referenceId
+     * @param String type
      * @return JsonObject
+     * @throws Exception
      */
-    public JsonObject createTranscation() {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+    private JsonObject handleTransaction(String referenceId, String type) throws Exception {
         String apiKey = BusterApi.getInstance().getAPIKey();
-        JsonObject body = new JsonObject();
-        body.addProperty("referenceId", UUID.randomUUID().toString().replace("-", ""));
+        String url = this.apiUrl + "/transaction";
+        JsonObject data;
 
         try {
-            HttpPost request = new HttpPost(this.apiUrl + "transaction");
-            StringEntity params = new StringEntity(body.toString());
-            request.addHeader("content-type", "application/json");
-            request.addHeader("X-API-KEY", apiKey);
-            request.setEntity(params);
+            if (type.equals("GET")) {
+                HttpGet getRequest = new HttpGet(url + "?referenceId=" + referenceId);
+                data = sendRequest(getRequest, apiKey);
+            } else {
+                // Create json body request
+                JsonObject body = new JsonObject();
+                body.addProperty("referenceId", referenceId);
 
-            HttpResponse response = httpClient.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+                HttpPost postRequest = new HttpPost(url);
+                postRequest.setEntity(new StringEntity(body.toString()));
 
-            if (statusCode != 200) {
-                throw new Exception("HTTP Error: " + statusCode + ", while creating transaction " + body.get("referenceId").toString() +" with API key: " + apiKey);
+                data = sendRequest(postRequest, apiKey);
+            }
+        } catch (Exception e) {
+            // Should only happen when a transaction is created
+            if (e.getMessage().equals("Reference Id is not unique")) {
+                // attempt to retrieve it from buster-api
+                return tryTransaction(referenceId, "GET", 150);
             }
 
-            String responseBody = EntityUtils.toString(response.getEntity());
-            JsonObject data = JsonParser.parseString(responseBody).getAsJsonObject();
-            Logger.info("Response: " + responseBody);
-
-            if (!data.has("id") || data.get("id").getAsString().isEmpty()) {
-                throw new Exception("Unknown error while retrieving transaction with API key: " + apiKey);
-            }
-            
-            return data; // return data set
-        } catch (Exception ex) {
-            Logger.error(ex.getMessage());
-            return new JsonObject();
+            throw new Exception("Error on " + type + " /transaction with referenceId " + referenceId + " and API key: " + apiKey);
         }
+
+        if (!data.has("id") || data.get("id").getAsString().isEmpty()) { // should never happen
+            throw new Exception("Unknown error while retrieving transaction with API key: " + apiKey);
+        }
+
+        return data;
     }
 
-    public JsonObject handleWebhook(Request response) {
-        String body = response.body();
+    /**
+     * Try a POST/GET request on the transaction endpoint and return the response
+     * 
+     * @todo tryTransaction should be able to handle delete/put request
+     * @param String referenceId
+     * @param String type
+     * @param int maxTime, define how long it should try this transaction
+     * @return JsonObject
+     */
+    public JsonObject tryTransaction(String referenceId, String type, int maxTime) {
+        long start,now;
+        start = now = (new Date()).getTime();
+        JsonObject data = null;
+
+        while(data == null && (now-start <= maxTime)) { // loop for some amount of milliseconds
+            try {
+                data = this.handleTransaction(referenceId, type);
+            } catch (Exception ex) {
+                now = (new Date()).getTime(); // update the time
+                Logger.error(ex.getMessage());
+            }
+        }
+        return data; // return data set
+    }
+
+    /**
+     * Process data retrieved from a webhook
+     * 
+     * @param Request request
+     * @return
+     */
+    public JsonObject handleWebhook(Request request) {
+        String body = request.body();
         Logger.info("Webhook Received: " + body);
         JsonObject data = JsonParser.parseString(body).getAsJsonObject();
 
@@ -127,11 +197,12 @@ public class BusterApi {
         return null;
     }
 
+    /**
+     * APIKey getter
+     * 
+     * @return String
+     */
     public String getAPIKey() {
         return this.apiKey;
-    }
-
-    public boolean hasAPIKey() {
-        return (this.apiKey != "");
     }
 }

@@ -23,14 +23,17 @@ public class WebhooksController {
             
             Optional<Transaction> transaction = DaoHelper.getTransactionDao().getByReferenceId(referenceId);
 
-            transaction.ifPresent(trans -> {
+            if (transaction.isPresent()) {
                 // only update status if the current one is one of those
                 // and if the externalId matches
-                if ( (trans.getStatus().equals("PENDING") || trans.getStatus().equals("CREATED"))
-                    && trans.getExternal_id().equals(externalId)) {
+                if ( (transaction.get().getStatus().equals("PENDING") || transaction.get().getStatus().equals("CREATED"))
+                    && transaction.get().getExternal_id().equals(externalId)) {
                     DaoHelper.getTransactionDao().updateStatusByReferenceId(referenceId, status);
                 }
-            });
+            } else { // in the case the object does not exist in the DB, create it
+                DaoHelper.getTransactionDao().create(referenceId, externalId, status);
+                // Potentially coulde return 201 code, since we created it
+            }
                 
             // unless the input data is misformated or incorrect.
             // always send 200 

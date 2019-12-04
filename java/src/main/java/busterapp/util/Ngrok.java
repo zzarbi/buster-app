@@ -11,16 +11,14 @@ import java.util.regex.Matcher;
 public class Ngrok {
     private static Ngrok instance = null;
     private String remoteUrl = "";
-    private String apiProtocol = "http";
-    private String apiHost = "host.docker.internal";
-    private String apiPort = "4040";
+    private String apiScheme = "http";
 
     private Ngrok () {
         init();
     }
 
     private String getFullUrl() {
-        return apiProtocol + "://" + apiHost + ":" + apiPort;
+        return apiScheme + "://" + EnvHelper.getNgrokHost() + ":" + EnvHelper.getNgrokPort();
     }
 
     /*
@@ -69,6 +67,11 @@ public class Ngrok {
         }
     }
 
+    /**
+     * Get the remote URL that ngrok uses
+     * 
+     * @return String
+     */
     public String getRemoteUrl() {
         return remoteUrl;
     }

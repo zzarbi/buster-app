@@ -1,9 +1,7 @@
 package busterapp.transaction.model;
 
 import lombok.Data;
-
 import java.util.Date;
-
 import com.google.gson.JsonObject;
 
 @Data
