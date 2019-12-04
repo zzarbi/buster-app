@@ -1,13 +1,13 @@
 package busterapp;
 
-import static spark.Spark.get;
-
 import busterapp.index.IndexController;
 import busterapp.transaction.*;
 import busterapp.webhooks.*;
 import busterapp.util.*;
+import com.google.gson.JsonObject;
 import static spark.Spark.*;
 import static spark.debug.DebugScreen.*;
+import static busterapp.util.Path.Web.*;
 
 public class App {
 
@@ -20,19 +20,34 @@ public class App {
 
         // Configure Spark
         port(4567);
-        staticFiles.location(Path.Web.PUBLIC);
+        staticFiles.location(PUBLIC);
         staticFiles.expireTime(600L);
         enableDebugScreen();
 
         // Set up before-filters (called before each get/post)
-        before(Path.Web.TRANSACTION, Filters.registerApplication);
+        before(TRANSACTION, Filters.registerApplication);
         before((request, response) -> response.type("application/json")); // enforce every response to be json
 
         // Set up routes
-        post(Path.Web.TRANSACTION, TransactionController.create);
-        get(Path.Web.TRANSACTION, TransactionController.fetchAll);
-        post(Path.Web.WEBHOOKS, WebhooksController.handle);
+        get(HEALTHCHECK, IndexController.healthcheck);
+        post(TRANSACTION, TransactionController.create);
+        get(TRANSACTION, TransactionController.fetchAll);
+        post(WEBHOOKS, WebhooksController.handle);
+
+        // handle other routes and error
         get("*", IndexController.notFound);
+        internalServerError(IndexController.serverError);
+        exception(Exception.class, (e, req, res) -> {
+            JsonObject newResponse = new JsonObject();
+            res.status(500);
+            newResponse.addProperty("code", 500);
+            newResponse.addProperty("error", e.getMessage());
+
+            if (EnvHelper.isDebug()) {
+                newResponse.addProperty("trace", e.getStackTrace().toString());
+            }
+            res.body(newResponse.toString());
+        });
 
         // Initialize Ngrok
         Ngrok.getInstance();

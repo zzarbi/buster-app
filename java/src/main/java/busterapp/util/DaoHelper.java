@@ -2,6 +2,7 @@ package busterapp.util;
 
 import org.sql2o.Sql2o;
 import busterapp.transaction.model.TransactionDao;
+import static busterapp.util.EnvHelper.*;
 
 public class DaoHelper {
     private static TransactionDao transactionModel = null;
@@ -15,9 +16,9 @@ public class DaoHelper {
      */
     private static Sql2o getDbConnection() {
         if (DaoHelper.db == null) {
-            DaoHelper.db = new Sql2o("jdbc:mysql://" + EnvHelper.getMysqlHost() + ":" + EnvHelper.getMysqlPort() + "/" + EnvHelper.getMysqlDB(),
-                EnvHelper.getMysqlUsername(),
-                EnvHelper.getMysqlPassword());
+            DaoHelper.db = new Sql2o("jdbc:mysql://" + getMysqlHost() + ":" + getMysqlPort() + "/" + getMysqlDB(),
+                getMysqlUsername(),
+                getMysqlPassword());
         }
 
         return DaoHelper.db;

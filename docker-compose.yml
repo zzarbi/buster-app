@@ -41,6 +41,34 @@ services:
       - buster-app-mysql
     volumes:
       - ./python:/opt/app
+  buster-java-app:
+    image: buster-java-app
+    build:
+      context: .
+      dockerfile: java.Dockerfile
+    ports:
+      - 4567:4567
+    environment:
+      BUSTER_API_URL: http://34.102.239.194
+      BUSTER_API_VERSION: 1
+      NGROK_HOST: host.docker.internal
+      NGROK_PORT: 4040
+      MYSQL_HOST: host.docker.internal
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: dev
+      MYSQL_PASSWORD: password123
+      MYSQL_DB: buster_dev
+      DEBUG: "false"
+    command: >
+      bash -c "
+      /opt/app/bin/wait-for-it.sh buster-app-mysql:3306 &&
+      /opt/app/bin/wait-for-it.sh buster-ngrok:4040 &&
+      /usr/lib/jvm/java-8-openjdk-amd64/bin/java -jar target/busterapp-jar-with-dependencies.jar"
+    depends_on:
+      - buster-app-mysql
+      - buster-ngrok
+    volumes:
+      - ./bin:/opt/app/bin
   buster-app-mysql:
     image: 'mysql:5.7'
     command: "--character-set-server='utf8mb4' --collation-server='utf8mb4_unicode_ci'"

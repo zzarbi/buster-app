@@ -14,6 +14,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import spark.Request;
+import static busterapp.util.Path.Buster.*;
 
 public class BusterApi {
     private static BusterApi instance = null;
@@ -78,7 +79,7 @@ public class BusterApi {
             body = new JsonObject();
             body.addProperty("webhookUrl", Ngrok.getInstance().getRemoteUrl() + Path.Web.WEBHOOKS);
 
-            HttpPost request = new HttpPost(this.apiUrl + Path.Buster.API_KEY);
+            HttpPost request = new HttpPost(this.apiUrl + API_KEY);
             request.setEntity(new StringEntity(body.toString()));
 
             // send non-authenticated request
@@ -111,7 +112,7 @@ public class BusterApi {
      * @throws Exception
      */
     private JsonObject handleTransaction(String referenceId, String type) throws Exception {
-        String url = this.apiUrl + Path.Buster.TRANSACTION;
+        String url = this.apiUrl + TRANSACTION;
         JsonObject data;
 
         try {
@@ -135,7 +136,7 @@ public class BusterApi {
                 return tryTransaction(referenceId, "GET", 150);
             }
 
-            throw new Exception("Error on " + type + " " + Path.Buster.TRANSACTION + " with referenceId " + referenceId + " and API key: " + apiKey);
+            throw new Exception("Error on " + type + " " + TRANSACTION + " with referenceId " + referenceId + " and API key: " + apiKey);
         }
 
         if (!data.has("id") || data.get("id").getAsString().isEmpty()) { // should never happen
@@ -199,10 +200,10 @@ public class BusterApi {
      */
     public boolean isStatusValid(String status) {
         switch(status) {
-            case Path.Buster.STATUS_COMPLETED:
-            case Path.Buster.STATUS_CANCELED:
-            case Path.Buster.STATUS_PENDING:
-            case Path.Buster.STATUS_CREATED:
+            case STATUS_COMPLETED:
+            case STATUS_CANCELED:
+            case STATUS_PENDING:
+            case STATUS_CREATED:
                 return true;
         }
         return false;

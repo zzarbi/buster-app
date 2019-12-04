@@ -92,6 +92,16 @@ POST /webhooks
 }
 ```
 
+GET /healthcheck
+
+	RESPONSE BODY Sample
+```json
+{
+    "code": 200,
+    "date": "2019-12-04T21:09Z"
+}
+```
+
 ## Wishlist/Todo
 - Handle generating a new api key if the current one is failing
 - Using caching technic, keep the last transaction in memory until status is CANCELED or COMPLETED (would avoid multiple db lookupand concurrency issue)

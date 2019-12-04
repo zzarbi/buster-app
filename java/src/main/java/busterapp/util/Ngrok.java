@@ -7,6 +7,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import static busterapp.util.EnvHelper.*;
+import static busterapp.util.Path.Ngrok.*;
 
 public class Ngrok {
     private static Ngrok instance = null;
@@ -25,7 +27,7 @@ public class Ngrok {
      * @return String
      */
     private String getFullUrl() {
-        return apiScheme + "://" + EnvHelper.getNgrokHost() + ":" + EnvHelper.getNgrokPort();
+        return apiScheme + "://" + getNgrokHost() + ":" + getNgrokPort();
     }
 
     /**
@@ -47,7 +49,7 @@ public class Ngrok {
         HttpClient httpClient = HttpClientBuilder.create().build();
 
         try {
-            HttpGet request = new HttpGet(getFullUrl() + Path.Ngrok.API_TUNNELS);
+            HttpGet request = new HttpGet(getFullUrl() + API_TUNNELS);
 
             HttpResponse response = httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();

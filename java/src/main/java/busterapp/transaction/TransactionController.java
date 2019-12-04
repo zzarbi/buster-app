@@ -53,6 +53,9 @@ public class TransactionController {
         newResponse.addProperty("code", 200);
         newResponse.getAsJsonObject().add("transactions", transactions);
 
+        // enforce that the GET request is not cached
+        response.header("Cache-Control", "no-cache");
+
         return newResponse.toString();
     };
 

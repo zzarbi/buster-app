@@ -1,0 +1,10 @@
+version: '3'
+services:
+  buster-app-mysql:
+    ports:
+      - 3306:3306
+  buster-ngrok:
+    environment:
+      NGROK_PORT: 'host.docker.internal:4567'
+    ports:
+      - 4040:4040

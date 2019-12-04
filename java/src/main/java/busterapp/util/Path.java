@@ -8,6 +8,7 @@ public class Path {
     // endpoints for this web app
     public static class Web {
         @Getter public static final String PUBLIC = "/public";
+        @Getter public static final String HEALTHCHECK = "/healthcheck";
         @Getter public static final String TRANSACTION = "/transaction";
         @Getter public static final String WEBHOOKS = "/webhooks";
     }
