@@ -1,4 +1,4 @@
-#BUSTER APP
+# BUSTER APP
 
 Here at dave we work a lot with third party data providers who aren't always the most consistent and reliable. For this test we have created an third party api that mimics the things we do regurarly here. 
 
@@ -23,6 +23,7 @@ After you have created an API key, all future requests need to be authenticated 
 
 
 POST /v1/transaction
+
 	AUTH
 		uses header X-API-KEY
 
@@ -36,6 +37,7 @@ POST /v1/transaction
       	referenceId - your provided reference id
 
 POST /v1/transaction
+
 	AUTH
 		uses header X-API-KEY
 
@@ -49,6 +51,7 @@ POST /v1/transaction
       	referenceId - your provided reference id
 
 GET /v1/transaction/<transaction_id>
+
 	AUTH
 		uses header X-API-KEY
 	
@@ -59,6 +62,7 @@ GET /v1/transaction/<transaction_id>
 		- see POST /v1/transaction RESPONSE BODY
 
 GET /v1/transaction?referenceId=<reference_id>
+
 	AUTH
 		uses header X-API-KEY
 	
@@ -69,6 +73,7 @@ GET /v1/transaction?referenceId=<reference_id>
 		- see POST /v1/transaction RESPONSE BODY
 
 WEBHOOKS
+
 	Webhooks will make a post request to the url provided in the request to create an api key
 
 	WEBHOOK BODY
@@ -94,5 +99,4 @@ WEBHOOKS
 Your job is to create an api with 2 endpoints.
 
 1. Create a transaction, this endpoint should respond with the created transaction, or an appropriate error.
-
 2. Fetch Transactions, I should be able to retrieve all the transactions i have created
