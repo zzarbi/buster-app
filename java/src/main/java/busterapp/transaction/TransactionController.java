@@ -3,12 +3,12 @@ package busterapp.transaction;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import busterapp.transaction.model.Transaction;
 import busterapp.util.BusterApi;
 import busterapp.util.DaoHelper;
+import busterapp.util.Path;
 import spark.*;
 
 public class TransactionController {
@@ -69,6 +69,10 @@ public class TransactionController {
             referenceId = resultFromApi.get("referenceId").getAsString();
             String externalId = resultFromApi.get("id").getAsString();
             String status = resultFromApi.get("status").getAsString();
+
+            if (!BusterApi.getInstance().isStatusValid(status)) {
+                status = Path.Buster.STATUS_CREATED; // If status is wrong, ensure it's set to created
+            }
 
             // save records to DB
             DaoHelper.getTransactionDao().create(referenceId, externalId, status);

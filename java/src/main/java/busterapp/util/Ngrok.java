@@ -13,16 +13,24 @@ public class Ngrok {
     private String remoteUrl = "";
     private String apiScheme = "http";
 
+    /**
+     * Private constructor
+     */
     private Ngrok () {
         init();
     }
 
+    /**
+     * Return the full URl for ngrok
+     * @return String
+     */
     private String getFullUrl() {
         return apiScheme + "://" + EnvHelper.getNgrokHost() + ":" + EnvHelper.getNgrokPort();
     }
 
-    /*
-     * Return an instance of the API
+    /**
+     * Return an single and same instance of the API
+     * @return Ngrok
      */
     public static Ngrok getInstance() {
         if (Ngrok.instance == null) {
@@ -31,7 +39,7 @@ public class Ngrok {
         return Ngrok.instance;
     }
 
-    /*
+    /**
      * Register Application to retrieve an API key
      */
     public void init() {
@@ -39,7 +47,7 @@ public class Ngrok {
         HttpClient httpClient = HttpClientBuilder.create().build();
 
         try {
-            HttpGet request = new HttpGet(getFullUrl() + "/api/tunnels");
+            HttpGet request = new HttpGet(getFullUrl() + Path.Ngrok.API_TUNNELS);
 
             HttpResponse response = httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();

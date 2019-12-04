@@ -2,22 +2,17 @@ package busterapp.util;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.UUID;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-
 import spark.Request;
 
 public class BusterApi {
@@ -44,10 +39,10 @@ public class BusterApi {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    private JsonObject sendRequest(HttpUriRequest request, String apiKey) throws ClientProtocolException, IOException, Exception {
+    private JsonObject sendRequest(HttpUriRequest request, boolean needAuthentication) throws ClientProtocolException, IOException, Exception {
         HttpClient httpClient = HttpClientBuilder.create().build();
         request.addHeader("content-type", "application/json");
-        if (!apiKey.isEmpty()) {
+        if (needAuthentication) {
             request.addHeader("X-API-KEY", apiKey);
         }
 
@@ -81,14 +76,14 @@ public class BusterApi {
             // create body json
             JsonObject data, body;
             body = new JsonObject();
-            body.addProperty("webhookUrl", Ngrok.getInstance().getRemoteUrl() + "/webhooks");
+            body.addProperty("webhookUrl", Ngrok.getInstance().getRemoteUrl() + Path.Web.WEBHOOKS);
 
-            HttpPost request = new HttpPost(this.apiUrl + "/api_key");
+            HttpPost request = new HttpPost(this.apiUrl + Path.Buster.API_KEY);
             request.setEntity(new StringEntity(body.toString()));
 
             // send non-authenticated request
             try {
-                data = sendRequest(request, "");
+                data = sendRequest(request, false);
             } catch(Exception e) {
                 throw new Exception("Error, unable to retrieve API key");
             }
@@ -116,14 +111,13 @@ public class BusterApi {
      * @throws Exception
      */
     private JsonObject handleTransaction(String referenceId, String type) throws Exception {
-        String apiKey = BusterApi.getInstance().getAPIKey();
-        String url = this.apiUrl + "/transaction";
+        String url = this.apiUrl + Path.Buster.TRANSACTION;
         JsonObject data;
 
         try {
             if (type.equals("GET")) {
                 HttpGet getRequest = new HttpGet(url + "?referenceId=" + referenceId);
-                data = sendRequest(getRequest, apiKey);
+                data = sendRequest(getRequest, true);
             } else {
                 // Create json body request
                 JsonObject body = new JsonObject();
@@ -132,7 +126,7 @@ public class BusterApi {
                 HttpPost postRequest = new HttpPost(url);
                 postRequest.setEntity(new StringEntity(body.toString()));
 
-                data = sendRequest(postRequest, apiKey);
+                data = sendRequest(postRequest, true);
             }
         } catch (Exception e) {
             // Should only happen when a transaction is created
@@ -141,7 +135,7 @@ public class BusterApi {
                 return tryTransaction(referenceId, "GET", 150);
             }
 
-            throw new Exception("Error on " + type + " /transaction with referenceId " + referenceId + " and API key: " + apiKey);
+            throw new Exception("Error on " + type + " " + Path.Buster.TRANSACTION + " with referenceId " + referenceId + " and API key: " + apiKey);
         }
 
         if (!data.has("id") || data.get("id").getAsString().isEmpty()) { // should never happen
@@ -195,6 +189,23 @@ public class BusterApi {
             }
         }
         return null;
+    }
+
+    /**
+     * Return true if the status is valid
+     * 
+     * @param String status
+     * @return boolean
+     */
+    public boolean isStatusValid(String status) {
+        switch(status) {
+            case Path.Buster.STATUS_COMPLETED:
+            case Path.Buster.STATUS_CANCELED:
+            case Path.Buster.STATUS_PENDING:
+            case Path.Buster.STATUS_CREATED:
+                return true;
+        }
+        return false;
     }
 
     /**

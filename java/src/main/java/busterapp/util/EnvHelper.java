@@ -3,51 +3,68 @@ package busterapp.util;
 public class EnvHelper {
     static boolean debug = false;
 
+    // buster-api default
     static String busterAPIUrl = "http://34.102.239.194";
     static String busterAPIVersion = "1";
 
+    // ngrok default
     static String ngrokHost = "host.docker.internal";
     static String ngrokPort = "4040";
 
+    // mysql default
     static String mysqlHost = "host.docker.internal";
     static String mysqlPort = "3306";
     static String mysqlUsername = "dev";
     static String mysqlPassword = "password123";
     static String mysqlDb = "buster_dev";
 
+    public static boolean isDebug() {
+        String value = System.getenv("DEBUG");
+        return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : debug;
+    }
+
     public static String getBusterAPIUrl() {
-        return !System.getenv("BUSTER_API_URL").isEmpty() ? System.getenv("BUSTER_API_URL") : busterAPIUrl;
+        String value = System.getenv("BUSTER_API_URL");
+        return value != null && !value.isEmpty() ? value : busterAPIUrl;
     }
     
     public static String getBusterAPIVersion() {
-        return !System.getenv("BUSTER_API_VERSION").isEmpty() ? System.getenv("BUSTER_API_VERSION") : busterAPIVersion;
+        String value = System.getenv("BUSTER_API_VERSION");
+        return value != null && !value.isEmpty() ? value : busterAPIVersion;
     }
 
     public static String getNgrokHost() {
-        return !System.getenv("NGROK_HOST").isEmpty() ? System.getenv("NGROK_HOST") : ngrokHost;
+        String value = System.getenv("NGROK_HOST");
+        return value != null && !value.isEmpty() ? value : ngrokHost;
     }
     
     public static String getNgrokPort() {
-        return !System.getenv("NGROK_PORT").isEmpty() ? System.getenv("NGROK_PORT") : ngrokPort;
+        String value = System.getenv("NGROK_PORT");
+        return value != null && !value.isEmpty() ? value : ngrokPort;
     }
 
     public static String getMysqlHost() {
-        return !System.getenv("MYSQL_HOST").isEmpty() ? System.getenv("MYSQL_HOST") : mysqlHost;
+        String value = System.getenv("MYSQL_HOST");
+        return value != null && !value.isEmpty() ? value : mysqlHost;
     }
     
     public static String getMysqlPort() {
-        return !System.getenv("MYSQL_PORT").isEmpty() ? System.getenv("MYSQL_PORT") : mysqlPort;
+        String value = System.getenv("MYSQL_PORT");
+        return value != null && !value.isEmpty() ? value : mysqlPort;
     }
 
     public static String getMysqlUsername() {
-        return !System.getenv("MYSQL_USERNAME").isEmpty() ? System.getenv("MYSQL_USERNAME") : mysqlUsername;
+        String value = System.getenv("MYSQL_USERNAME");
+        return value != null && !value.isEmpty() ? value : mysqlUsername;
     }
     
     public static String getMysqlPassword() {
-        return !System.getenv("MYSQL_PASSWORD").isEmpty() ? System.getenv("MYSQL_PASSWORD") : mysqlPassword;
+        String value = System.getenv("MYSQL_PASSWORD");
+        return value != null && !value.isEmpty() ? value : mysqlPassword;
     }
 
     public static String getMysqlDB() {
-        return !System.getenv("MYSQL_DB").isEmpty() ? System.getenv("MYSQL_DB") : mysqlDb;
+        String value = System.getenv("MYSQL_DB");
+        return value != null && !value.isEmpty() ? value : mysqlDb;
     }
 }

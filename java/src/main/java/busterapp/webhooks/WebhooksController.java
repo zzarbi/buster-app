@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import busterapp.transaction.model.Transaction;
 import busterapp.util.BusterApi;
 import busterapp.util.DaoHelper;
+import busterapp.util.Path;
 import spark.*;
 
 public class WebhooksController {
@@ -24,13 +25,20 @@ public class WebhooksController {
             Optional<Transaction> transaction = DaoHelper.getTransactionDao().getByReferenceId(referenceId);
 
             if (transaction.isPresent()) {
-                // only update status if the current one is one of those
-                // and if the externalId matches
-                if ( (transaction.get().getStatus().equals("PENDING") || transaction.get().getStatus().equals("CREATED"))
+                // only update status if:
+                // - the status is valid
+                // - the current status is not canceled/completed
+                // - the externalId matches
+                if ( BusterApi.getInstance().isStatusValid(status)
+                    && !transaction.get().getStatus().equals(Path.Buster.STATUS_CANCELED)
+                    && !transaction.get().getStatus().equals(Path.Buster.STATUS_COMPLETED)
                     && transaction.get().getExternal_id().equals(externalId)) {
                     DaoHelper.getTransactionDao().updateStatusByReferenceId(referenceId, status);
                 }
             } else { // in the case the object does not exist in the DB, create it
+                if (!BusterApi.getInstance().isStatusValid(status)) { // if status is invalid for somereason
+                    status = Path.Buster.STATUS_CREATED;
+                }
                 DaoHelper.getTransactionDao().create(referenceId, externalId, status);
                 // Potentially coulde return 201 code, since we created it
             }

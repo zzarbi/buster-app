@@ -17,7 +17,7 @@ If you make a GET request to http://localhost:4567/transaction you should:
 
 Endpoints are:
 
-POST /transaction  -  creates a transcation
+POST /transaction  -  creates a transaction
 
 	POST BODY PARAMS
 		None
@@ -36,7 +36,7 @@ POST /transaction  -  creates a transcation
     }
 }
 ```
-
+    It will try to create one transaction and in case of error from the source it will attempt a few more time for a certain amount of time.
       id: An integer of the Primary Key of the DB
       reference_id: A unique random id
       external_id: A unique id of the transaction from Buster-API
@@ -45,7 +45,7 @@ POST /transaction  -  creates a transcation
 
 
 
-GET /transaction
+GET /transaction - retrieves a list of transactions 
 
 	QUERY PARAMS
 		Limit - A positive value, the default is set at 100
@@ -92,14 +92,15 @@ POST /webhooks
 }
 ```
 
-
 ## Wishlist/Todo
-- Using caching technic, keep the last transaction in memory until status is CANCELED or COMPLETED
+- Handle generating a new api key if the current one is failing
+- Using caching technic, keep the last transaction in memory until status is CANCELED or COMPLETED (would avoid multiple db lookupand concurrency issue)
 - Add updated_at field in the database, for tracking when a row was updated
 - Make sure that Buster-API returns an updated_at datetime in order to make sure we only update the transaction with the latest information
 - Update `util.Ngrok` to parse XML properly (instead of regex shortcut)
 - Create an abstract contoller for basic operation like returning JSON and reading query/body params (alternatively find a plugin to do that)
 - Figure out concurrency: Java/Jetty can be setup to have multiple thread so one docker instance could handle multiple request
+- Add unitest, right now the only thing that can be really unitested is the one DAO/BO object. Everything else would better benefit of a BDD test suite
 
 ## Known Bugs
 - Java has issue accessing docker instance via their name. For instance while the the image of `buster-java-app` can ping `buster-java-app` (`ping buster-app-mysql`). For some reason Java cannot connect to `buster-app-mysql`. Had to use `host.docker.internal`, which mean we need to expose the ports of Ngrok and Mysql

@@ -8,6 +8,10 @@ import java.util.Optional;
 public class TransactionDao {
     private Sql2o sql2o;
 
+    /**
+     * Constructor
+     * @param sql2o
+     */
     public TransactionDao(Sql2o sql2o) {
         this.sql2o = sql2o;
     }

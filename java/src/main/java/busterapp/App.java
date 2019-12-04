@@ -2,7 +2,7 @@ package busterapp;
 
 import static spark.Spark.get;
 
-import busterapp.index.*;
+import busterapp.index.IndexController;
 import busterapp.transaction.*;
 import busterapp.webhooks.*;
 import busterapp.util.*;
@@ -12,13 +12,15 @@ import static spark.debug.DebugScreen.*;
 public class App {
 
     public static void main(String[] args) {
-        System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
+        if (EnvHelper.isDebug()) {
+            System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
+            System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+            System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
+        }
 
         // Configure Spark
         port(4567);
-        staticFiles.location("/public");
+        staticFiles.location(Path.Web.PUBLIC);
         staticFiles.expireTime(600L);
         enableDebugScreen();
 
