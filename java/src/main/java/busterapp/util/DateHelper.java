@@ -15,7 +15,7 @@ public class DateHelper {
      * @return String
      */
     public static String formatISO8601(Date date) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'+00:00'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         
         return df.format(date);

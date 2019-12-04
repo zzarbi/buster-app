@@ -7,6 +7,7 @@ import busterapp.util.BusterApi;
 import busterapp.util.DaoHelper;
 import busterapp.util.Path;
 import spark.*;
+import org.sql2o.*;
 
 public class WebhooksController {
 
@@ -39,7 +40,15 @@ public class WebhooksController {
                 if (!BusterApi.getInstance().isStatusValid(status)) { // if status is invalid for somereason
                     status = Path.Buster.STATUS_CREATED;
                 }
-                DaoHelper.getTransactionDao().create(referenceId, externalId, status);
+
+                try {
+                    DaoHelper.getTransactionDao().create(referenceId, externalId, status);
+                } catch(Sql2oException e) {
+                    // if there is an error and it's not due to duplication
+                    if (!e.getMessage().contains("Duplicate entry")) {
+                        throw e;
+                    }
+                }
                 // Potentially coulde return 201 code, since we created it
             }
                 

@@ -42,6 +42,7 @@ public class App {
             res.status(500);
             newResponse.addProperty("code", 500);
             newResponse.addProperty("error", e.getMessage());
+            Logger.error("Fatal Error: " + e.getMessage());
 
             if (EnvHelper.isDebug()) {
                 newResponse.addProperty("trace", e.getStackTrace().toString());

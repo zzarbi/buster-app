@@ -10,6 +10,7 @@ import busterapp.util.BusterApi;
 import busterapp.util.DaoHelper;
 import busterapp.util.Path;
 import spark.*;
+import org.sql2o.*;
 
 public class TransactionController {
     /**
@@ -78,7 +79,14 @@ public class TransactionController {
             }
 
             // save records to DB
-            DaoHelper.getTransactionDao().create(referenceId, externalId, status);
+            try {
+                DaoHelper.getTransactionDao().create(referenceId, externalId, status);
+            } catch(Sql2oException e) {
+                // if there is an error and it's not due to duplication
+                if (!e.getMessage().contains("Duplicate entry")) {
+                    throw e;
+                }
+            }
 
             newResponse.addProperty("code", 201);
             response.status(201);
@@ -88,7 +96,7 @@ public class TransactionController {
             });
         } else {
             response.status(503);
-            response.header("Retry-After", "1"); // set header to retry after 1second
+            response.header("Retry-After", "1"); // set header to retry after 1 second
             newResponse.addProperty("code", 503);
             newResponse.addProperty("error", "Unable to create transaction at the moment");
         }
