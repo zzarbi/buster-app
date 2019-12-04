@@ -1,0 +1,369 @@
+{
+	"info": {
+		"_postman_id": "0a134015-3a3a-4b1a-9a3c-2b3814d3ea47",
+		"name": "Buster Java App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Healthcheck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0862d6a8-90b1-4bf9-97c6-eb2fa4bd8575",
+						"exec": [
+							"",
+							"pm.test(\"response must be valid and have a json body\", function () {",
+							"     // assert that the status code is 200",
+							"     pm.response.to.be.ok; // info, success, redirection, clientError,  serverError, are other variants",
+							"     // assert that the response has a valid JSON body",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json; // this assertion also checks if a body  exists, so the above check is not needed",
+							"});",
+							"",
+							"pm.test(\"response must have a date\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.date).to.not.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4567/healthcheck",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"healthcheck"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Healthcheck",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4567/healthcheck",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4567",
+							"path": [
+								"healthcheck"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 04 Dec 2019 21:50:08 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Server",
+							"value": "Jetty(9.4.z-SNAPSHOT)"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"date\": \"2019-12-04T21:50:08+00:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "List transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85e667a2-18e4-4f72-a349-96eb204268f7",
+						"exec": [
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     // assert that the status code is 200",
+							"     pm.response.to.be.ok; // info, success, redirection, clientError,  serverError, are other variants",
+							"     // assert that the response has a valid JSON body",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json; // this assertion also checks if a body  exists, so the above check is not needed",
+							"});",
+							"",
+							"pm.test(\"response must have transactions\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.transactions).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"response must have proper transactions (IF ANY)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.transactions.length > 0) {",
+							"        var transaction = jsonData.transactions[0];",
+							"        ",
+							"        pm.expect(transaction.id).to.be.at.least(1);",
+							"        pm.expect(transaction.reference_id).to.not.empty;",
+							"        pm.expect(transaction.external_id).to.not.empty;",
+							"        pm.expect(transaction.created).to.not.empty;",
+							"        pm.expect(transaction.status).to.be.oneOf([\"CREATED\", \"PENDING\", \"CANCELED\", \"COMPLETED\"]);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4567/transaction?limit=100&offset=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"transaction"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "List transactions",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4567/transaction?limit=100&offset=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4567",
+							"path": [
+								"transaction"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 04 Dec 2019 21:49:30 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Server",
+							"value": "Jetty(9.4.z-SNAPSHOT)"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"transactions\": [\n        {\n            \"id\": 10,\n            \"reference_id\": \"1b3849f969fd48b68a78b0b90d7b754d\",\n            \"external_id\": \"f68f3e11-25d9-4698-8189-f3e590be1a1a\",\n            \"created\": \"2019-12-04T21:47:36+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 9,\n            \"reference_id\": \"ead37cb8ac2f49bfbacbc75300194459\",\n            \"external_id\": \"6c290f1d-d299-4759-b299-589ebd3aa0e3\",\n            \"created\": \"2019-12-04T21:47:35+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 8,\n            \"reference_id\": \"67e295fbb8734364a32697792a416ff7\",\n            \"external_id\": \"942b619b-0de2-43ab-aa29-908efe17c7d9\",\n            \"created\": \"2019-12-04T21:47:34+00:00\",\n            \"status\": \"CANCELED\"\n        },\n        {\n            \"id\": 7,\n            \"reference_id\": \"c271c327240f45679d56308152e10c8d\",\n            \"external_id\": \"98464d40-a123-4977-bde1-4284ecaf4294\",\n            \"created\": \"2019-12-04T21:47:33+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 6,\n            \"reference_id\": \"961ab8763ca147de82d9ea11d584de90\",\n            \"external_id\": \"969fdc6a-5fda-48e1-b892-a13c6baea646\",\n            \"created\": \"2019-12-04T21:47:32+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 5,\n            \"reference_id\": \"d58130b97d6f4be4ad2d03372a713eea\",\n            \"external_id\": \"9b6c2aa1-2c0f-43d8-b191-bd4551b3b23b\",\n            \"created\": \"2019-12-04T21:47:31+00:00\",\n            \"status\": \"CANCELED\"\n        },\n        {\n            \"id\": 4,\n            \"reference_id\": \"65a3b4281f344126bceda2f00873a8cf\",\n            \"external_id\": \"66452a44-3824-4abf-9ef0-44e2579a2b55\",\n            \"created\": \"2019-12-04T21:47:30+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 3,\n            \"reference_id\": \"c6962f56b02c4267afc04dfcf62af254\",\n            \"external_id\": \"cc9adfd2-c70e-4519-adcf-de458a4a93f4\",\n            \"created\": \"2019-12-04T21:47:29+00:00\",\n            \"status\": \"CANCELED\"\n        },\n        {\n            \"id\": 2,\n            \"reference_id\": \"dcb42062a0454b36892ca7e498e9ee18\",\n            \"external_id\": \"ecd5d71e-fd49-44d5-a8f9-7c4437fa7289\",\n            \"created\": \"2019-12-04T21:47:28+00:00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"id\": 1,\n            \"reference_id\": \"0a0c37d7feb440c3b836fe60f8aba644\",\n            \"external_id\": \"5349209d-7ea0-4300-863a-2d7bc490883e\",\n            \"created\": \"2019-12-04T21:47:27+00:00\",\n            \"status\": \"CANCELED\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Create Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa90ea02-abf5-4214-a07b-3d6047b5bf1e",
+						"exec": [
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     // assert that the status code is 201",
+							"     pm.response.to.have.status(201);",
+							"     ",
+							"     // assert that the response has a valid JSON body",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json; // this assertion also checks if a body  exists, so the above check is not needed",
+							"});",
+							"",
+							"",
+							"pm.test(\"response must return proper data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.transaction).to.not.be.null;",
+							"    pm.expect(jsonData.transaction.id).to.be.at.least(1);",
+							"    pm.expect(jsonData.transaction.reference_id).to.not.empty;",
+							"    pm.expect(jsonData.transaction.external_id).to.not.empty;",
+							"    pm.expect(jsonData.transaction.created).to.not.empty;",
+							"    pm.expect(jsonData.transaction.status).to.be.oneOf([\"CREATED\", \"PENDING\", \"CANCELED\", \"COMPLETED\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4567/transaction",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"transaction"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create Transaction",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4567/transaction",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4567",
+							"path": [
+								"transaction"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 04 Dec 2019 21:48:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Server",
+							"value": "Jetty(9.4.z-SNAPSHOT)"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"transaction\": {\n        \"id\": 16,\n        \"reference_id\": \"3a8b3bed4be4420a8801df40f5f63427\",\n        \"external_id\": \"6b1d4e07-6ee6-4002-b8f7-46271e52c76f\",\n        \"created\": \"2019-12-04T21:48:11+00:00\",\n        \"status\": \"CREATED\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Webhooks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ea803d5-4e91-4723-8ac8-1ef715c29505",
+						"exec": [
+							"",
+							"pm.test(\"response must be valid and have a json body\", function () {",
+							"     // assert that the status code is 200",
+							"     pm.response.to.be.ok; // info, success, redirection, clientError,  serverError, are other variants",
+							"     // assert that the response has a valid JSON body",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json; // this assertion also checks if a body  exists, so the above check is not needed",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"TRANSACTION_UPDATE\",\n    \"data\": {\n        \"id\": \"6f4f4e89-437e-4a7c-9fdf-6f013713e154\",\n        \"created\": \"2019-12-04T22:27:33.000Z\",\n        \"status\": \"CANCELED\",\n        \"referenceId\": \"592a8c9ff6554a219d6c3eea216b7bb9\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4567/webhooks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"webhooks"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -179,16 +179,23 @@ public class BusterApi {
      */
     public JsonObject handleWebhook(Request request) {
         String body = request.body();
-        Logger.info("Webhook Received: " + body);
-        JsonObject data = JsonParser.parseString(body).getAsJsonObject();
-
-        if (data.has("type")) {
-            String transactionType = data.get("type").getAsString();
-
-            if (transactionType.equals("TRANSACTION_UPDATE")) {
-                return data.getAsJsonObject("data");
-            }
+        if (body.isEmpty()) {
+            return null;
         }
+
+        try {
+            Logger.info("Webhook Received: " + body);
+            JsonObject data = JsonParser.parseString(body).getAsJsonObject();
+
+            if (data.has("type")) {
+                String transactionType = data.get("type").getAsString();
+
+                if (transactionType.equals("TRANSACTION_UPDATE")) {
+                    return data.getAsJsonObject("data");
+                }
+            }
+        } catch (Exception e) {}
+
         return null;
     }
 
