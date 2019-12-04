@@ -12,6 +12,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import spark.Request;
+
 public class BusterApi {
     private static BusterApi instance = null;
     private String apiUrl = "";
@@ -59,17 +61,22 @@ public class BusterApi {
             String responseBody = EntityUtils.toString(response.getEntity());
             JsonObject data = JsonParser.parseString(responseBody).getAsJsonObject();
 
-            if (!data.has("key")) {
+            if (!data.has("key") || data.get("key").getAsString().isEmpty()) {
                 throw new Exception("API Key is empty");
             }
             
             Logger.info("Got an API Key: " + data.get("key").toString());
-            this.apiKey = data.get("key").toString().replace("\"", "");
+            this.apiKey = data.get("key").getAsString();
         } catch (Exception ex) {
             Logger.error(ex.getMessage());
         }
     }
 
+    /**
+     * Create a transaction and return the response
+     * 
+     * @return JsonObject
+     */
     public JsonObject createTranscation() {
         HttpClient httpClient = HttpClientBuilder.create().build();
         String apiKey = BusterApi.getInstance().getAPIKey();
@@ -94,15 +101,30 @@ public class BusterApi {
             JsonObject data = JsonParser.parseString(responseBody).getAsJsonObject();
             Logger.info("Response: " + responseBody);
 
-            if (!data.has("id")) {
+            if (!data.has("id") || data.get("id").getAsString().isEmpty()) {
                 throw new Exception("Unknown error while retrieving transaction with API key: " + apiKey);
             }
             
-            return data;
+            return data; // return data set
         } catch (Exception ex) {
             Logger.error(ex.getMessage());
             return new JsonObject();
         }
+    }
+
+    public JsonObject handleWebhook(Request response) {
+        String body = response.body();
+        Logger.info("Webhook Received: " + body);
+        JsonObject data = JsonParser.parseString(body).getAsJsonObject();
+
+        if (data.has("type")) {
+            String transactionType = data.get("type").getAsString();
+
+            if (transactionType.equals("TRANSACTION_UPDATE")) {
+                return data.getAsJsonObject("data");
+            }
+        }
+        return null;
     }
 
     public String getAPIKey() {

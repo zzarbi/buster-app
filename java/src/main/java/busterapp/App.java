@@ -24,6 +24,7 @@ public class App {
 
         // Set up before-filters (called before each get/post)
         before(Path.Web.TRANSACTION, Filters.registerApplication);
+        before((request, response) -> response.type("application/json")); // enforce every response to be json
 
         // Set up routes
         post(Path.Web.TRANSACTION, TransactionController.create);
